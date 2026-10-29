@@ -13,10 +13,8 @@
 *.sdf
 *.opendb
 *.opensdf
-*.vcxproj
 *.vcxproj.filters
 *.vcxproj.user
-*.sln
 *.sln.docfiles
 *.suo
 *.user
@@ -24,6 +22,10 @@
 *.csproj
 *.csproj.user
 *.unityproj
+
+# Исключения — файлы проекта ECHO PROTOCOL отслеживаем
+!ECHO_PROTOCOL.sln
+!Source/ECHO_PROTOCOL/ECHO_PROTOCOL.vcxproj
 
 # macOS
 .DS_Store
