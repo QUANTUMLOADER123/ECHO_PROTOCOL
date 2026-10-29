@@ -19,11 +19,15 @@ public class ECHO_PROTOCOL : ModuleRules
 			"AIModule",
 			"GameplayTasks",
 			"Slate",
-			"SlateCore"
+			"SlateCore",
+			"OnlineSubsystem",
+			"OnlineSubsystemSteam",
+			"Networking"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[]
 		{
+			"LogVisualization"
 		});
 
 		PublicIncludePaths.AddRange(new string[] { "ECHO_PROTOCOL/Public" });

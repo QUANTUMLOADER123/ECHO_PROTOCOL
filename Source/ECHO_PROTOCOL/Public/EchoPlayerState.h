@@ -7,7 +7,7 @@
 #include "EchoPlayerState.generated.h"
 
 /**
- * Состояние игрока: здоровье, бронь, тревога, Э호-заряд.
+ * Состояние игрока: здоровье, броня, тревога, Эхо-заряд.
  */
 UCLASS()
 class ECHO_PROTOCOL_API AEchoPlayerState : public APlayerState
