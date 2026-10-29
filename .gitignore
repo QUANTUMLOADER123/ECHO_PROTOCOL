@@ -1,0 +1,51 @@
+# Unreal Engine 5 .gitignore
+# Generated for ECHO PROTOCOL
+
+# Binaries and builds
+[Bb]inaries/
+[Bb]uild/
+[Ee]xported/
+[Ss]aved/
+[Ii]ntermediate/
+
+# Visual Studio / Rider
+.vs/
+*.sdf
+*.opendb
+*.opensdf
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.sln
+*.sln.docfiles
+*.suo
+*.user
+*.userprefs
+*.csproj
+*.csproj.user
+*.unityproj
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# Local plugins / source overrides
+Source/ThirdParty/
+
+# Custom builds output
+Builds/
+
+# End of file

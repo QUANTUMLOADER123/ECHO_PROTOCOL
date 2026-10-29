@@ -1,0 +1,14 @@
+{
+    "FileVersion": 3,
+    "EngineAssociation": "5.0",
+    "Category": "",
+    "Description": "ECHO PROTOCOL — стелс-экстракшн PvE от первого лица на Unreal Engine 5",
+    "Modules": [
+        {
+            "Name": "ECHO_PROTOCOL",
+            "Type": "Game",
+            "LoadingPhase": "Default"
+        }
+    ],
+    "Plugins": []
+}
