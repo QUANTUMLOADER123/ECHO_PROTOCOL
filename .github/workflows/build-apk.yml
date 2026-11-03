@@ -64,20 +64,37 @@ jobs:
           path: dist/ECHO_PROTOCOL.apk
           retention-days: 90
 
-      - name: Publish APK to repo + Release
+      - name: Publish APK file into repo (Contents API)
         if: github.ref_name == 'arena/0d65d7f0-echo-protocol' || github.ref_name == 'main'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          mkdir -p releases
-          cp dist/ECHO_PROTOCOL.apk releases/ECHO_PROTOCOL.apk
-          cp dist/ECHO_PROTOCOL.apk.sha256 releases/ECHO_PROTOCOL.apk.sha256
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add releases/ECHO_PROTOCOL.apk releases/ECHO_PROTOCOL.apk.sha256
-          git commit -m "Release: ECHO_PROTOCOL.apk v1.0 (built by Actions)" || echo "nothing to commit"
-          git push origin HEAD:${{ github.ref_name }}
-          gh release create v1.0 dist/ECHO_PROTOCOL.apk \
-            --title "ECHO PROTOCOL: NEON SWARM v1.0" \
-            --notes "📱 Готовый APK игры ECHO PROTOCOL: NEON SWARM. Скачай ECHO_PROTOCOL.apk, открой на телефоне (Android 7.0+), разреши установку — играй! Интернет и реклама не нужны." \
-            || gh release upload v1.0 dist/ECHO_PROTOCOL.apk --clobber
+          BRANCH="${{ github.ref_name }}"
+          for f in "dist/ECHO_PROTOCOL.apk:releases/ECHO_PROTOCOL.apk" "dist/ECHO_PROTOCOL.apk.sha256:releases/ECHO_PROTOCOL.apk.sha256"; do
+            SRC="${f%%:*}"; DST="${f##*:}"
+            SHA=$(gh api "repos/${{ github.repository }}/contents/$DST?ref=$BRANCH" --jq .sha 2>/dev/null || echo "")
+            base64 -w0 "$SRC" > /tmp/file.b64
+            if [ -n "$SHA" ] && [ "$SHA" != "null" ]; then
+              jq -n --rawfile c /tmp/file.b64 --arg m "Release: ECHO_PROTOCOL.apk v1.0 (built by Actions)" --arg b "$BRANCH" --arg s "$SHA" \
+                '{message:$m, branch:$b, sha:$s, content:$c}' > /tmp/payload.json
+            else
+              jq -n --rawfile c /tmp/file.b64 --arg m "Release: ECHO_PROTOCOL.apk v1.0 (built by Actions)" --arg b "$BRANCH" \
+                '{message:$m, branch:$b, content:$c}' > /tmp/payload.json
+            fi
+            gh api --method PUT "repos/${{ github.repository }}/contents/$DST" --input /tmp/payload.json --jq .content.path
+          done
+
+      - name: Publish GitHub Release
+        if: github.ref_name == 'arena/0d65d7f0-echo-protocol' || github.ref_name == 'main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view v1.0 > /dev/null 2>&1; then
+            gh release upload v1.0 dist/ECHO_PROTOCOL.apk --clobber
+          else
+            gh release create v1.0 dist/ECHO_PROTOCOL.apk \
+              --target "${{ github.ref_name }}" \
+              --title "ECHO PROTOCOL: NEON SWARM v1.0" \
+              --notes "📱 Готовый APK игры ECHO PROTOCOL: NEON SWARM. Скачай ECHO_PROTOCOL.apk, открой на телефоне (Android 7.0+), разреши установку — играй! Интернет и реклама не нужны."
+          fi
+          gh release view v1.0 --json url,assets --jq '{url, assets: [.assets[].name]}'
