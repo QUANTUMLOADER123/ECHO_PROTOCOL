@@ -63,3 +63,21 @@ jobs:
           name: ECHO_PROTOCOL-apk
           path: dist/ECHO_PROTOCOL.apk
           retention-days: 90
+
+      - name: Publish APK to repo + Release (manual runs only)
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p releases
+          cp dist/ECHO_PROTOCOL.apk releases/ECHO_PROTOCOL.apk
+          cp dist/ECHO_PROTOCOL.apk.sha256 releases/ECHO_PROTOCOL.apk.sha256
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add releases/ECHO_PROTOCOL.apk releases/ECHO_PROTOCOL.apk.sha256
+          git commit -m "Release: ECHO_PROTOCOL.apk v1.0 (built by Actions)" || echo "nothing to commit"
+          git push origin HEAD:${{ github.ref_name }}
+          gh release create v1.0 dist/ECHO_PROTOCOL.apk \
+            --title "ECHO PROTOCOL: NEON SWARM v1.0" \
+            --notes "📱 Готовый APK игры ECHO PROTOCOL: NEON SWARM. Скачай ECHO_PROTOCOL.apk, открой на телефоне (Android 7.0+), разреши установку — играй! Интернет и реклама не нужны." \
+            || gh release upload v1.0 dist/ECHO_PROTOCOL.apk --clobber
